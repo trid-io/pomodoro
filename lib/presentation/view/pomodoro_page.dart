@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomodoro/presentation/bloc/pomo_bloc.dart';
 import 'package:pomodoro/presentation/bloc/pomo_event.dart';
@@ -28,7 +29,13 @@ class PomodoroPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  _buildSessions(context, state),
                   _buildButtons(context, state.status),
+                  OutlinedButton(
+                    onPressed: () =>
+                        context.read<PomoBloc>().add(const PomoNextPressed()),
+                    child: const Text('Next'),
+                  )
                 ],
               );
             },
@@ -36,6 +43,36 @@ class PomodoroPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildSessions(BuildContext context, PomoState state) {
+    print(
+        'build Sessions: totalSession ${state.totalSessions}, currentSession: ${state.currentSession}');
+
+    final children = <Widget>[];
+    List.generate(state.totalSessions, (index) {
+      bool isActiveSession = index <= (state.currentSession - 1);
+      children.add(Container(
+        width: 10,
+        height: 10,
+        decoration: isActiveSession
+            ? const BoxDecoration(
+                color: Colors.grey,
+                shape: BoxShape.circle,
+              )
+            : BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.grey, width: 1),
+                shape: BoxShape.circle,
+              ),
+      ));
+      if (index < state.totalSessions - 1) {
+        children.add(const SizedBox(
+          width: 10,
+        ));
+      }
+    });
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: children);
   }
 
   Widget _buildButtons(BuildContext context, PomoStatus status) {

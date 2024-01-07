@@ -97,7 +97,7 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
 
   int _getDefaultSeconds() {
     final int seconds;
-    switch (state.mode) {
+    switch (_getNewMode()) {
       case PomoMode.focus:
         seconds = state.setting.focusDuration.inSeconds;
       case PomoMode.shortBreak:
@@ -123,7 +123,13 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
   }
 
   int _getNewSession() {
-    return (state.currentSession % state.totalSessions) + 1;
+    switch (_getNewMode()) {
+      case PomoMode.focus:
+        return (state.currentSession % state.totalSessions) + 1;
+      case PomoMode.shortBreak:
+      case PomoMode.longBreak:
+        return state.currentSession;
+    }
   }
 
   @override
