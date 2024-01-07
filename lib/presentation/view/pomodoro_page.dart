@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,7 +36,14 @@ class PomodoroPage extends StatelessWidget {
                     onPressed: () =>
                         context.read<PomoBloc>().add(const PomoNextPressed()),
                     child: const Text('Next'),
-                  )
+                  ),
+                  Switch.adaptive(
+                      value: state.setting.autoStart,
+                      onChanged: (value) {
+                        context
+                            .read<PomoBloc>()
+                            .add(PomoAutoStartChanged(autoStart: value));
+                      })
                 ],
               );
             },

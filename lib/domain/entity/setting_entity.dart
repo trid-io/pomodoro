@@ -20,6 +20,23 @@ class SettingEntity extends Equatable {
   final bool autoStart;
   final bool sendNotification;
 
+  SettingEntity copyWith({
+    Duration? focusDuration,
+    Duration? shortBreakDuration,
+    Duration? longBreakDuration,
+    int? totalSessions,
+    bool? autoStart,
+    bool? sendNotification,
+  }) =>
+      SettingEntity(
+        focusDuration: focusDuration ?? this.focusDuration,
+        shortBreakDuration: shortBreakDuration ?? this.shortBreakDuration,
+        longBreakDuration: longBreakDuration ?? this.longBreakDuration,
+        totalSessions: totalSessions ?? this.totalSessions,
+        autoStart: autoStart ?? this.autoStart,
+        sendNotification: sendNotification ?? this.sendNotification,
+      );
+
   @override
   List<Object?> get props => [
         focusDuration,

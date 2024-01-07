@@ -32,3 +32,8 @@ final class PomoResetPressed extends PomoEvent {
 final class PomoNextPressed extends PomoEvent {
   const PomoNextPressed();
 }
+
+final class PomoAutoStartChanged extends PomoEvent {
+  const PomoAutoStartChanged({required this.autoStart});
+  final bool autoStart;
+}

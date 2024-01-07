@@ -38,16 +38,15 @@ final class PomoState extends Equatable {
     int? currentSession,
     int? seconds,
     String? error,
-  }) {
-    return PomoState(
-      setting: setting ?? this.setting,
-      status: status ?? this.status,
-      mode: mode ?? this.mode,
-      currentSession: currentSession ?? this.currentSession,
-      seconds: seconds ?? this.seconds,
-      error: error ?? this.error,
-    );
-  }
+  }) =>
+      PomoState(
+        setting: setting ?? this.setting,
+        status: status ?? this.status,
+        mode: mode ?? this.mode,
+        currentSession: currentSession ?? this.currentSession,
+        seconds: seconds ?? this.seconds,
+        error: error ?? this.error,
+      );
 
   @override
   List<Object?> get props => [
