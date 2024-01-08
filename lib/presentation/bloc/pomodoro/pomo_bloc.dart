@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:pomodoro/presentation/bloc/pomo_event.dart';
-import 'package:pomodoro/presentation/bloc/pomo_state.dart';
+
+import 'pomo_event.dart';
+import 'pomo_state.dart';
 
 class PomoBloc extends Bloc<PomoEvent, PomoState> {
   PomoBloc() : super(PomoState()) {
@@ -12,7 +13,7 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
     on<PomoPausePressed>(_onPausedPressed);
     on<PomoResetPressed>(_onResetPressed);
     on<PomoNextPressed>(_onNextPressed);
-    on<PomoAutoStartChanged>(_onAutoStartChanged);
+    on<PomoSettingChanged>(_onSettingChanged);
   }
 
   final oneSec = const Duration(seconds: 1);
@@ -88,13 +89,11 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
     if (state.setting.autoStart) add(const PomoStartPressed());
   }
 
-  void _onAutoStartChanged(
-    PomoAutoStartChanged event,
+  void _onSettingChanged(
+    PomoSettingChanged event,
     Emitter<PomoState> emit,
   ) {
-    emit(state.copyWith(
-      setting: state.setting.copyWith(autoStart: event.autoStart),
-    ));
+    emit(state.copyWith(setting: event.setting));
   }
 
   void _startTimer(Emitter<PomoState> emit) {

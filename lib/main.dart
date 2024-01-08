@@ -1,7 +1,12 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:pomodoro/bloc_observer.dart';
-import 'package:pomodoro/presentation/view/pomodoro_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomodoro/core/bloc_observer.dart';
+import 'package:pomodoro/core/logger.dart';
+import 'package:pomodoro/core/router.dart';
+import 'package:pomodoro/core/theme.dart';
+import 'package:pomodoro/presentation/bloc/settings/setting_cubit.dart';
+
+import 'presentation/bloc/settings/setting_state.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,22 +20,23 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Pomodoro',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return BlocProvider(
+      create: (context) => SettingCubit(),
+      child: BlocBuilder<SettingCubit, SettingState>(
+        buildWhen: (previous, current) =>
+            previous.setting.darkMode != current.setting.darkMode,
+        builder: (context, state) {
+          return MaterialApp.router(
+            title: 'Pomodoro',
+            debugShowCheckedModeBanner: false,
+            theme: lightTheme(),
+            darkTheme: darkTheme(),
+            themeMode:
+                state.setting.darkMode ? ThemeMode.dark : ThemeMode.light,
+            routerConfig: appRouter,
+          );
+        },
       ),
-      home: const AppView(),
     );
-  }
-}
-
-class AppView extends StatelessWidget {
-  const AppView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return PomodoroPage();
   }
 }

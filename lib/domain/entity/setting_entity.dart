@@ -7,6 +7,7 @@ class SettingEntity extends Equatable {
     this.longBreakDuration = const Duration(minutes: 20),
     this.totalSessions = 4,
     this.autoStart = false,
+    this.darkMode = false,
     this.sendNotification = true,
   });
 
@@ -15,6 +16,7 @@ class SettingEntity extends Equatable {
   final Duration longBreakDuration;
   final int totalSessions;
   final bool autoStart;
+  final bool darkMode;
   final bool sendNotification;
 
   SettingEntity copyWith({
@@ -23,6 +25,7 @@ class SettingEntity extends Equatable {
     Duration? longBreakDuration,
     int? totalSessions,
     bool? autoStart,
+    bool? darkMode,
     bool? sendNotification,
   }) =>
       SettingEntity(
@@ -31,6 +34,7 @@ class SettingEntity extends Equatable {
         longBreakDuration: longBreakDuration ?? this.longBreakDuration,
         totalSessions: totalSessions ?? this.totalSessions,
         autoStart: autoStart ?? this.autoStart,
+        darkMode: darkMode ?? this.darkMode,
         sendNotification: sendNotification ?? this.sendNotification,
       );
 
@@ -41,11 +45,12 @@ class SettingEntity extends Equatable {
         longBreakDuration,
         totalSessions,
         autoStart,
+        darkMode,
         sendNotification,
       ];
 
   @override
   String toString() {
-    return 'SettingEntity{focusDuration=$focusDuration, shortBreakDuration=$shortBreakDuration, longBreakDuration=$longBreakDuration, totalSessions=$totalSessions, autoStart=$autoStart, sendNotification=$sendNotification}';
+    return 'SettingEntity{focusDuration=$focusDuration, shortBreakDuration=$shortBreakDuration, longBreakDuration=$longBreakDuration, totalSessions=$totalSessions, autoStart=$autoStart, darkMode=$darkMode, sendNotification=$sendNotification}';
   }
 }

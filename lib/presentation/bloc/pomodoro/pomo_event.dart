@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:pomodoro/domain/entity/setting_entity.dart';
 
 sealed class PomoEvent extends Equatable {
   const PomoEvent();
@@ -19,6 +20,9 @@ final class PomoTimeChanged extends PomoEvent {
   const PomoTimeChanged({required this.seconds});
 
   final int seconds;
+
+  @override
+  List<Object?> get props => [seconds];
 }
 
 final class PomoPausePressed extends PomoEvent {
@@ -33,7 +37,11 @@ final class PomoNextPressed extends PomoEvent {
   const PomoNextPressed();
 }
 
-final class PomoAutoStartChanged extends PomoEvent {
-  const PomoAutoStartChanged({required this.autoStart});
-  final bool autoStart;
+final class PomoSettingChanged extends PomoEvent {
+  const PomoSettingChanged({required this.setting});
+
+  final SettingEntity setting;
+
+  @override
+  List<Object?> get props => [setting];
 }

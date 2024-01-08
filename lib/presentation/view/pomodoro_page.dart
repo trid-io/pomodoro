@@ -1,13 +1,13 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomodoro/presentation/bloc/pomo_bloc.dart';
-import 'package:pomodoro/presentation/bloc/pomo_event.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pomodoro/core/logger.dart';
 
-import '../bloc/pomo_state.dart';
+import '../bloc/pomodoro/pomo_event.dart';
+import '../bloc/pomodoro/pomo_bloc.dart';
+import '../bloc/pomodoro/pomo_state.dart';
 
 class PomodoroPage extends StatelessWidget {
   const PomodoroPage({super.key});
@@ -17,44 +17,43 @@ class PomodoroPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => PomoBloc(),
       child: Scaffold(
-        body: SafeArea(
-          child: BlocBuilder<PomoBloc, PomoState>(
-            builder: (context, state) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    state.displayTime,
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                    ),
+        appBar: AppBar(
+          actions: [
+            IconButton(
+              onPressed: () => context.go('/settings'),
+              icon: Icon(Icons.settings_outlined),
+            )
+          ],
+        ),
+        body: BlocBuilder<PomoBloc, PomoState>(
+          builder: (context, state) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  state.displayTime,
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
                   ),
-                  _buildSessions(context, state),
-                  _buildButtons(context, state.status),
-                  OutlinedButton(
-                    onPressed: () =>
-                        context.read<PomoBloc>().add(const PomoNextPressed()),
-                    child: const Text('Next'),
-                  ),
-                  Switch.adaptive(
-                      value: state.setting.autoStart,
-                      onChanged: (value) {
-                        context
-                            .read<PomoBloc>()
-                            .add(PomoAutoStartChanged(autoStart: value));
-                      })
-                ],
-              );
-            },
-          ),
+                ),
+                _buildSessions(context, state),
+                _buildButtons(context, state.status),
+                OutlinedButton(
+                  onPressed: () =>
+                      context.read<PomoBloc>().add(const PomoNextPressed()),
+                  child: const Text('Next'),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
   Widget _buildSessions(BuildContext context, PomoState state) {
-    print(
+    logger.d(
         'build Sessions: totalSession ${state.totalSessions}, currentSession: ${state.currentSession}');
 
     final children = <Widget>[];
