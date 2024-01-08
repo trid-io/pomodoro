@@ -57,4 +57,9 @@ final class PomoState extends Equatable {
         seconds,
         error,
       ];
+
+  @override
+  String toString() {
+    return 'PomoState{setting=$setting, status=$status, mode=$mode, currentSession=$currentSession, seconds=$seconds, error=$error}';
+  }
 }

@@ -24,6 +24,9 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
   ) {
     switch (state.status) {
       case PomoStatus.initial:
+        emit(state.copyWith(
+            status: PomoStatus
+                .running)); // Update state right await to avoid delayed after timer has run for 1 second
         _startTimer(emit);
       case PomoStatus.paused:
       case PomoStatus.running:
@@ -37,6 +40,9 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
   ) {
     switch (state.status) {
       case PomoStatus.paused:
+        emit(state.copyWith(
+            status: PomoStatus
+                .running)); // Update state right await to avoid delayed after timer has run for 1 second
         _startTimer(emit);
       case PomoStatus.initial:
       case PomoStatus.running:
@@ -63,7 +69,7 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
     _cancelTimer();
     emit(state.copyWith(
       status: PomoStatus.initial,
-      seconds: _getDefaultSeconds(),
+      seconds: _getDefaultSeconds(state.mode),
     ));
   }
 
@@ -72,24 +78,20 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
     Emitter<PomoState> emit,
   ) {
     _cancelTimer();
-    if (state.setting.autoStart) {
-      emit(state.copyWith(
-        mode: _getNewMode(),
-        currentSession: _getNewSession(),
-        seconds: _getDefaultSeconds(),
-      ));
-    } else {
-      emit(state.copyWith(
-        status: PomoStatus.initial,
-        mode: _getNewMode(),
-        currentSession: _getNewSession(),
-        seconds: _getDefaultSeconds(),
-      ));
-    }
+    final newMode = _getNewMode();
+    emit(state.copyWith(
+      status: PomoStatus.initial,
+      mode: newMode,
+      currentSession: _getNewSession(newMode),
+      seconds: _getDefaultSeconds(newMode),
+    ));
+    if (state.setting.autoStart) add(const PomoStartPressed());
   }
 
   void _onAutoStartChanged(
-      PomoAutoStartChanged event, Emitter<PomoState> emit) {
+    PomoAutoStartChanged event,
+    Emitter<PomoState> emit,
+  ) {
     emit(state.copyWith(
       setting: state.setting.copyWith(autoStart: event.autoStart),
     ));
@@ -97,7 +99,7 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
 
   void _startTimer(Emitter<PomoState> emit) {
     _timer = Timer.periodic(oneSec, (timer) {
-      print('timer tick: ${timer.tick}, seconds: ${state.seconds}');
+      // print('timer tick: ${timer.tick}, seconds: ${state.seconds}');
       final newSeconds = state.seconds - 1;
       add(PomoTimeChanged(seconds: newSeconds));
       if (newSeconds <= 0) {
@@ -111,9 +113,9 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
     _timer?.cancel();
   }
 
-  int _getDefaultSeconds() {
+  int _getDefaultSeconds(PomoMode mode) {
     final int seconds;
-    switch (_getNewMode()) {
+    switch (mode) {
       case PomoMode.focus:
         seconds = state.setting.focusDuration.inSeconds;
       case PomoMode.shortBreak:
@@ -138,8 +140,8 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
     }
   }
 
-  int _getNewSession() {
-    switch (_getNewMode()) {
+  int _getNewSession(PomoMode mode) {
+    switch (mode) {
       case PomoMode.focus:
         return (state.currentSession % state.totalSessions) + 1;
       case PomoMode.shortBreak:

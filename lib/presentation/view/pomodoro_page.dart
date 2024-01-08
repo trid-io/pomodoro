@@ -58,29 +58,117 @@ class PomodoroPage extends StatelessWidget {
         'build Sessions: totalSession ${state.totalSessions}, currentSession: ${state.currentSession}');
 
     final children = <Widget>[];
-    List.generate(state.totalSessions, (index) {
-      bool isActiveSession = index <= (state.currentSession - 1);
-      children.add(Container(
-        width: 10,
-        height: 10,
-        decoration: isActiveSession
-            ? const BoxDecoration(
-                color: Colors.grey,
+
+    /* double to include breaks. Eg. 4 sessions should have 4 breaks (3 short breaks and 1 long break) */
+    final totalItems = state.totalSessions * 2;
+
+    Color sessionColor = Colors.red;
+    Color shortBreakColor = Colors.green;
+    Color longBreakColor = Colors.greenAccent;
+
+    List.generate(totalItems, (index) {
+      // switch (state.mode) {
+      //   case PomoMode.focus:
+      //     break;
+      //   case PomoMode.shortBreak:
+      //     break;
+      //   case PomoMode.longBreak:
+      //     break;
+      // }
+      bool isSession = index % 2 == 0;
+      bool isLongBreak = index == totalItems - 1;
+      bool isShortBreak = !isSession && !isLongBreak;
+      int sessionIndex = (state.currentSession - 1) * 2;
+      bool isActive = index <= sessionIndex;
+      // bool isActiveBreak = index <= ((state.currentSession - 1) * 2 + 1) &&
+      //     (isShortBreak || isLongBreak);
+      bool isActiveBreak = index < sessionIndex ||
+          (state.mode != PomoMode.focus && index == sessionIndex + 1);
+
+      if (isSession) {
+        if (isActive) {
+          children.add(Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: sessionColor,
                 shape: BoxShape.circle,
-              )
-            : BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey, width: 1),
-                shape: BoxShape.circle,
-              ),
-      ));
-      if (index < state.totalSessions - 1) {
+              )));
+        } else {
+          children.add(Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: sessionColor, width: 1),
+              shape: BoxShape.circle,
+            ),
+          ));
+        }
+      }
+
+      if (isShortBreak) {
+        if (isActiveBreak) {
+          children.add(Container(
+            width: 20,
+            height: 5,
+            decoration: BoxDecoration(
+              color: shortBreakColor,
+              borderRadius: BorderRadius.circular(5),
+              shape: BoxShape.rectangle,
+            ),
+          ));
+        } else {
+          children.add(Container(
+            width: 20,
+            height: 5,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: shortBreakColor, width: 1),
+              shape: BoxShape.rectangle,
+            ),
+          ));
+        }
+      }
+
+      if (isLongBreak) {
+        if (isActiveBreak) {
+          children.add(Container(
+            width: 30,
+            height: 5,
+            decoration: BoxDecoration(
+              color: longBreakColor,
+              borderRadius: BorderRadius.circular(5),
+              shape: BoxShape.rectangle,
+            ),
+          ));
+        } else {
+          children.add(Container(
+            width: 30,
+            height: 5,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: longBreakColor, width: 1),
+              shape: BoxShape.rectangle,
+            ),
+          ));
+        }
+      }
+
+      if (!isLongBreak) {
         children.add(const SizedBox(
           width: 10,
         ));
       }
     });
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: children);
+    return Wrap(
+      alignment: WrapAlignment.start,
+      runSpacing: 20,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: children,
+    );
   }
 
   Widget _buildButtons(BuildContext context, PomoStatus status) {
