@@ -79,6 +79,7 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
     Emitter<PomoState> emit,
   ) {
     _cancelTimer();
+    final oldStatus = state.status;
     final newMode = _getNewMode();
     emit(state.copyWith(
       status: PomoStatus.initial,
@@ -86,7 +87,9 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
       currentSession: _getNewSession(newMode),
       seconds: _getDefaultSeconds(newMode),
     ));
-    if (state.setting.autoStart) add(const PomoStartPressed());
+    if (state.setting.autoStart && oldStatus == PomoStatus.running) {
+      add(const PomoStartPressed());
+    }
   }
 
   void _onSettingChanged(
@@ -94,6 +97,7 @@ class PomoBloc extends Bloc<PomoEvent, PomoState> {
     Emitter<PomoState> emit,
   ) {
     emit(state.copyWith(setting: event.setting));
+    emit(state.copyWith(seconds: _getDefaultSeconds(state.mode)));
   }
 
   void _startTimer(Emitter<PomoState> emit) {
