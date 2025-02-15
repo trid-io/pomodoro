@@ -21,56 +21,49 @@ class PomoSessions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final children = <Widget>[];
-
     /* double to include breaks. Eg. 4 sessions should have 4 breaks (3 short breaks and 1 long break) */
     final totalItems = totalSessions * 2;
 
-    List.generate(totalItems, (index) {
-      bool isSession = index % 2 == 0;
-      bool isLongBreak = index == totalItems - 1;
-      bool isShortBreak = !isSession && !isLongBreak;
-      int sessionIndex = (currentSession - 1) * 2;
-      bool isActiveSession = index <= sessionIndex;
-      bool isActiveBreak = (index < sessionIndex) ||
-          (currentMode != PomoMode.focus && index == sessionIndex + 1);
-
-      if (isSession) {
-        if (isActiveSession) {
-          children.add(ActiveSession(color: sessionColor));
-        } else {
-          children.add(InactiveSession(color: sessionColor));
-        }
-      }
-
-      if (isShortBreak) {
-        if (isActiveBreak) {
-          children.add(ActiveShortBreak(color: shortBreakColor));
-        } else {
-          children.add(InactiveShortBreak(color: shortBreakColor));
-        }
-      }
-
-      if (isLongBreak) {
-        if (isActiveBreak) {
-          children.add(ActiveLongBreak(color: longBreakColor));
-        } else {
-          children.add(InactiveLongBreak(color: longBreakColor));
-        }
-      }
-
-      if (!isLongBreak) {
-        children.add(const SizedBox(
-          width: 10,
-        ));
-      }
-    });
-
     return Wrap(
       alignment: WrapAlignment.start,
+      spacing: 10,
       runSpacing: 20,
       crossAxisAlignment: WrapCrossAlignment.center,
-      children: children,
+      children: List<Widget>.generate(totalItems, (index) {
+        bool isSession = index % 2 == 0;
+        bool isLongBreak = index == totalItems - 1;
+        bool isShortBreak = !isSession && !isLongBreak;
+        int sessionIndex = (currentSession - 1) * 2;
+        bool isActiveSession = index <= sessionIndex;
+        bool isActiveBreak = (index < sessionIndex) ||
+            (currentMode != PomoMode.focus && index == sessionIndex + 1);
+
+        if (isSession) {
+          if (isActiveSession) {
+            return ActiveSession(color: sessionColor);
+          } else {
+            return InactiveSession(color: sessionColor);
+          }
+        }
+
+        if (isShortBreak) {
+          if (isActiveBreak) {
+            return ActiveShortBreak(color: shortBreakColor);
+          } else {
+            return InactiveShortBreak(color: shortBreakColor);
+          }
+        }
+
+        if (isLongBreak) {
+          if (isActiveBreak) {
+            return ActiveLongBreak(color: longBreakColor);
+          } else {
+            return InactiveLongBreak(color: longBreakColor);
+          }
+        }
+
+        return const SizedBox();
+      }).toList(),
     );
   }
 }
